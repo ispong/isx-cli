@@ -13,10 +13,7 @@ def clone():
     check_login()
     isx_config = get_config()
     project_name = input_project_number(isx_config)
-    if isx_config['projects'][project_name]['dir'] != '':
-        print("该项目已下载，请重新执行【isx clone】选择")
-        exit(0)
-    project_dir = input_project_dir(project_name)
+    project_dir = input_project_dir()
     clone_github_code(isx_config, project_name, project_dir)
     isx_config["projects"][project_name]['dir'] = project_dir + '/' + project_name
     save_config(isx_config)
@@ -34,16 +31,13 @@ def input_project_number(isx_config):
         exit(0)
 
 
-def input_project_dir(project_name):
+def input_project_dir():
     project_dir = input("请输入下载目录(全路径)：")
     if not os.path.exists(project_dir):
         print("路径输入异常，请重新执行【isx clone】命令")
         exit(0)
     if project_dir.endswith("/"):
         project_dir = project_dir[:-1]
-    if os.path.exists(project_dir + '/' + project_name):
-        print("目录已存在，请删除重试")
-        exit(0)
     return project_dir
 
 
@@ -81,6 +75,9 @@ def check_project_forked(repository, account, token):
 def clone_code(repository, project_dir, account, token):
     matcher = re.search(r"/([^/.]+)\.git", repository)
     project_name = matcher.group(1)
+    if os.path.exists(project_dir):
+        print("【" + project_name + "】 已存在")
+        return
     self_repository = repository.replace('https://', 'https://' + token + '@').replace('isxcode', account)
     command = 'cd ' + project_dir + ' && git clone ' + self_repository
     completed_process = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
