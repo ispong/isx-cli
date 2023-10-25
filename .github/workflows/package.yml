@@ -32,7 +32,10 @@ jobs:
           go-version: '1.21.3'
 
       - name: 安装项目依赖
-        run: go get -u github.com/go-yaml/yaml
+        run: | 
+          go get -u github.com/go-yaml/yaml
+          go get isxcode.com/isxcode/isx-cli/src/action
+          go get isxcode.com/isxcode/isx-cli/src/utils
 
       - name: 打包windows环境命令
         run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./target/isx_windows_amd64.exe main.go
