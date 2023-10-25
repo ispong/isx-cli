@@ -35,7 +35,7 @@ jobs:
         run: |
           pwd
           go env -w GO111MODULE=on
-          go env -w GOPATH=/home/runner/work/isx-cli/isx-cli
+          go env -w GOPATH=/home/runner/work/isx-cli
           go env
           go install
 
