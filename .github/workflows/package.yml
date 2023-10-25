@@ -33,10 +33,8 @@ jobs:
 
       - name: 安装项目依赖
         run: |
-          pwd
           go env -w GO111MODULE=on
-          go env -w GOPATH=/home/runner/work/isx-cli
-          go env
+          go env -w GOPATH=/home/runner/work/isx-cli/isx-cli/goPath
           go install
 
       - name: 打包windows环境命令
