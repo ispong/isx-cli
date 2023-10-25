@@ -1,3 +1,8 @@
 build/**
 isx
 .idea/**
+
+src
+goPath
+isx*
+main
