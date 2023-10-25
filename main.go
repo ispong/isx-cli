@@ -1,8 +1,8 @@
 package main
 
 import (
-	"isxcode.com/isxcode/isx-cli/src/action"
-	"isxcode.com/isxcode/isx-cli/src/utils"
+	action2 "isxcode.com/isxcode/isx-cli/action"
+	"isxcode.com/isxcode/isx-cli/utils"
 	"os"
 )
 
@@ -13,58 +13,58 @@ func main() {
 	actionCode := os.Args[1]
 	switch actionCode {
 	case "reset":
-		action.Reset()
+		action2.Reset()
 	case "login":
-		action.Login()
+		action2.Login()
 	case "logout":
-		action.Reset()
+		action2.Reset()
 	case "clone":
-		action.Reset()
+		action2.Reset()
 	//case "list":
 	//	action.ListPackage()
 	case "choose":
-		action.Reset()
+		action2.Reset()
 	case "show":
-		action.Reset()
+		action2.Reset()
 	case "idea":
-		action.Reset()
+		action2.Reset()
 	case "vscode":
-		action.Reset()
+		action2.Reset()
 	case "clean":
-		action.Reset()
+		action2.Reset()
 	case "start":
-		action.Reset()
+		action2.Reset()
 	case "package":
-		action.Reset()
+		action2.Reset()
 	case "docker":
-		action.Reset()
+		action2.Reset()
 	case "deploy":
-		action.Reset()
+		action2.Reset()
 	case "website":
-		action.Reset()
+		action2.Reset()
 	case "git":
-		action.Reset()
+		action2.Reset()
 	case "get":
-		action.Reset()
+		action2.Reset()
 	case "pr":
-		action.Reset()
+		action2.Reset()
 	case "branch":
-		action.Reset()
+		action2.Reset()
 	case "frontend":
-		action.Reset()
+		action2.Reset()
 	case "backend":
-		action.Reset()
+		action2.Reset()
 	case "web":
-		action.Reset()
+		action2.Reset()
 	case "home":
-		action.Reset()
+		action2.Reset()
 	case "install":
-		action.Reset()
+		action2.Reset()
 	case "remove":
-		action.Reset()
+		action2.Reset()
 	case "format":
-		action.Reset()
+		action2.Reset()
 	case "version":
-		action.Reset()
+		action2.Reset()
 	}
 }
