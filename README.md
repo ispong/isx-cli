@@ -25,7 +25,14 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o isx main.go
 
 > 若系统不支持，下载源码本地构建。
 
-- [https://openfly.oss-cn-shanghai.aliyuncs.com/isx/isx_macos_m2_v1.0.0](https://openfly.oss-cn-shanghai.aliyuncs.com/isx/isx_macos_m2_v1.0.0)
+- https://openfly.oss-cn-shanghai.aliyuncs.com/isx/isx_darwin_arm64
+- https://openfly.oss-cn-shanghai.aliyuncs.com/isx/isx_linux_amd64
+- https://openfly.oss-cn-shanghai.aliyuncs.com/isx/isx_windows_amd64.exe
+
+```bash
+wget https://openfly.oss-cn-shanghai.aliyuncs.com/isx/isx_darwin_arm64 -O isx
+chmod a+x isx
+```
 
 #### 使用说明
 
