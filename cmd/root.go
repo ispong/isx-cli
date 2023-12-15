@@ -4,6 +4,10 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bytes"
+	"fmt"
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -39,14 +43,80 @@ func Execute() {
 	}
 }
 
-func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+var (
+	cfgFile string
+)
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.isx-cli.yaml)")
+func init() {
+	cobra.OnInitialize(initConfig)
+
+	// 解析配置文件
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.isx/isx-config.yml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func initConfig() {
+
+	// 获取home目录
+	home, err := homedir.Dir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// 初始化配置文件信息
+	viper.SetConfigFile(home + "/.isx/isx-config.yml")
+
+	// 判断配置文件是否存在
+	if err := viper.ReadInConfig(); err != nil {
+
+		// 判断文件夹是否存在，不存在则新建
+		_, err := os.Stat(home + "/.isx")
+		if os.IsNotExist(err) {
+			err := os.Mkdir(home+"/.isx", 0755)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+
+		// 判断文件是否存在，不存在则新建
+		_, err = os.Stat(home + "/.isx/isx-config.yml")
+		if os.IsNotExist(err) {
+			// 初始化配置
+			viper.SetConfigType("yaml")
+			var yamlExample = []byte(`
+account:
+token:
+current-project:
+projects:
+  - flink-yun:
+      dir: ''
+      describe: 至爻云-流（至流云）
+      repository: https://github.com/isxcode/flink-yun.git
+      sub-repository:
+        - https://github.com/isxcode/flink-yun-vip.git
+  - spark-yun:
+      dir: ''
+      describe: 至爻云-轻（至轻云）
+      repository: https://github.com/isxcode/spark-yun.git
+      sub-repository:
+        - https://github.com/isxcode/spark-yun-vip.git
+`)
+			err := viper.ReadConfig(bytes.NewBuffer(yamlExample))
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			// 持久化配置
+			err = viper.SafeWriteConfigAs(home + "/.isx/isx-config.yml")
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+	}
 }
