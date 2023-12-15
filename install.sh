@@ -1,16 +1,6 @@
 #!/bin/sh
 
-# 获取HOME路径
-mkdir -p ~/isx
-cd ~/isx
-wget https://openfly.oss-cn-shanghai.aliyuncs.com/isx/isx_darwin_arm64
-mv isx_darwin_arm64 isx
-chmod a+x ~/isx/isx
-
-tee -a ~/.zshrc <<-'EOF'
-export PATH=$PATH:/Users/ispong/isx
-EOF
-
-source /Users/ispong/.zshrc
+sudo wget https://github.com/isxcode/isx-cli/releases/download/v1.0.0/isx_darwin_arm64 -O /usr/local/bin/isx
+sudo chmod a+x /usr/local/bin/isx
 
 echo "安装成功"
