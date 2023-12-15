@@ -89,21 +89,23 @@ func initConfig() {
 			// 初始化配置
 			viper.SetConfigType("yaml")
 			var yamlExample = []byte(`
-account:
-token:
-current-project:
+account: ''
+token: ''
+current: ''
 projects:
-  - flink-yun:
+  -   name: flink-yun
+      number: 0
       dir: ''
       describe: 至爻云-流（至流云）
       repository: https://github.com/isxcode/flink-yun.git
-      sub-repository:
+      sub:
         - https://github.com/isxcode/flink-yun-vip.git
-  - spark-yun:
+  -   name: spark-yun
+      number: 1
       dir: ''
       describe: 至爻云-轻（至轻云）
       repository: https://github.com/isxcode/spark-yun.git
-      sub-repository:
+      sub:
         - https://github.com/isxcode/spark-yun-vip.git
 `)
 			err := viper.ReadConfig(bytes.NewBuffer(yamlExample))
