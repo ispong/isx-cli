@@ -9,26 +9,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// configCmd represents the config command
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "查看配置内容，举例：isx config",
-	Long:  `查看配置内容，举例：isx config`,
+// listCmd represents the list command
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "陈列项目列表，举例：isx list",
+	Long:  `陈列项目列表，举例：isx list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
+		fmt.Println("list called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(listCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// configCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// configCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

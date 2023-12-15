@@ -9,26 +9,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// configCmd represents the config command
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "查看配置内容，举例：isx config",
-	Long:  `查看配置内容，举例：isx config`,
+// gradleCmd represents the gradle command
+var gradleCmd = &cobra.Command{
+	Use:   "gradle",
+	Short: "在项目内执行gradle命令，举例：isx gradle install",
+	Long:  `gradle install、gradle start、gradle clean、gradle format`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
+		fmt.Println("gradle called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(gradleCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// configCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// gradleCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// configCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// gradleCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
