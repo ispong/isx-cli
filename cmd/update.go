@@ -75,7 +75,7 @@ var updateCmd = &cobra.Command{
 				}
 
 				latestVersion = strings.ReplaceAll(data["name"].(string), "v", "")
-				fmt.Println(latestVersion)
+				fmt.Println("正在更新到最新版本：" + latestVersion)
 			}
 		} else {
 			fmt.Println("获取最新版本失败")

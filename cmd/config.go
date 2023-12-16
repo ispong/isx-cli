@@ -5,8 +5,9 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 // configCmd represents the config command
@@ -15,7 +16,12 @@ var configCmd = &cobra.Command{
 	Short: "查看配置内容，举例：isx config",
 	Long:  `查看配置内容，举例：isx config`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
+		data, err := yaml.Marshal(viper.AllSettings())
+		if err != nil {
+			fmt.Println("Failed to marshal projects:", err)
+			return
+		}
+		fmt.Println(string(data))
 	},
 }
 

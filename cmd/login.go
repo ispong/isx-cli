@@ -12,56 +12,45 @@ import (
 	"os"
 )
 
-// loginCmd represents the login command
+var (
+	account string
+	token   string
+)
+
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "github用户登录",
 	Long:  `github用户登录`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var account string
-		var token string
+
+		// 输入github账号
 		fmt.Print("请输入github账号:")
-		_, err := fmt.Scanln(&account)
-		if err != nil {
-			return
-		}
+		fmt.Scanln(&account)
+
+		// 输入github令牌
 		fmt.Println("快捷链接：https://github.com/settings/tokens")
 		fmt.Print("请输入token:")
-		_, err = fmt.Scanln(&token)
-		if err != nil {
-			return
-		}
-		// 检查token是否有效
-		checkGithubToken(account, token)
+		fmt.Scanln(&token)
+
+		// 检查令牌是否可用
+		checkGithubToken()
+
 		// 保存配置
-		saveAccountAndToken(account, token)
+		saveConfigLogin()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(loginCmd)
-
-	// Here you will define your flags and configuration settings.
-	//loginCmd.Flags().StringP("account", "a", "", "github账号")
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// loginCmd.PersistentFlags().String("foo", "", "A help for foo")
 }
 
-// 保存配置
-func saveAccountAndToken(account string, token string) {
-	viper.Set("account", account)
-	viper.Set("token", token)
-	err := viper.WriteConfig()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+func saveConfigLogin() {
+	viper.Set("user.account", account)
+	viper.Set("user.token", token)
+	viper.WriteConfig()
 }
 
-// 检测token是否合法
-func checkGithubToken(account string, token string) {
+func checkGithubToken() {
 
 	headers := http.Header{}
 	headers.Set("Accept", "application/vnd.github+json")
@@ -70,10 +59,6 @@ func checkGithubToken(account string, token string) {
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "https://api.github.com/octocat", nil)
-	if err != nil {
-		fmt.Println("创建请求失败:", err)
-		os.Exit(1)
-	}
 
 	req.Header = headers
 	resp, err := client.Do(req)
