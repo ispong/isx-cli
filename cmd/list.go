@@ -5,8 +5,9 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"strconv"
 )
 
 // listCmd represents the list command
@@ -15,7 +16,11 @@ var listCmd = &cobra.Command{
 	Short: "陈列项目列表，举例：isx list",
 	Long:  `陈列项目列表，举例：isx list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		// 打印项目列表
+		projectList := viper.GetStringSlice("project-list")
+		for index, projectName := range projectList {
+			fmt.Println("[" + strconv.Itoa(index) + "] " + viper.GetString(projectName+".name") + ": " + viper.GetString(projectName+".describe") + " 下载状态 【" + viper.GetString(projectName+".repository.download") + "】")
+		}
 	},
 }
 
