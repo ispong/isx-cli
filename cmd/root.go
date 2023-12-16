@@ -107,6 +107,7 @@ spark-yun:
     sub-repository:
         - url: https://github.com/isxcode/spark-yun-vip.git
           download: no
+          name: spark-yun-vip
 flink-yun:
     name: flink-yun
     describe: 至爻云-流（至流云）
@@ -117,6 +118,7 @@ flink-yun:
     sub-repository:
         - url: https://github.com/isxcode/flink-yun-vip.git
           download: no
+          name: flink-yun-vip
 version:
     number: 0.0.2
 `)

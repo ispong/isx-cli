@@ -80,6 +80,7 @@ func inputProjectPath() {
 type Repository struct {
 	Download string `yaml:"download"`
 	Url      string `yaml:"url"`
+	Name     string `yaml:"name"`
 }
 
 func cloneProjectCode() {
