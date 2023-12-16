@@ -12,8 +12,8 @@ import (
 // setCmd represents the set command
 var setCmd = &cobra.Command{
 	Use:   "set",
-	Short: "设置配置文件，举例：isx set flink-yun.dir '/Users/ispong'",
-	Long:  `设置配置文件，举例：isx set account ispong`,
+	Short: "设置配置文件参数，举例：isx set flink-yun.dir /Users/ispong",
+	Long:  `设置配置文件参数，举例：isx set account ispong`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(viper.GetString("current-project.one"))
 	},

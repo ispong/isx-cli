@@ -23,8 +23,8 @@ var (
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "更新isx命令，举例：isx update",
-	Long:  `更新isx命令，举例：isx update`,
+	Short: "更新isx-cli命令，举例：isx update",
+	Long:  `更新isx-cli命令，举例：isx update`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// 获取当前版本中的版本号

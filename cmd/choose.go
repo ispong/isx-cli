@@ -12,7 +12,7 @@ import (
 // chooseCmd represents the choose command
 var chooseCmd = &cobra.Command{
 	Use:   "choose",
-	Short: "选择开发项目，举例：isx choose",
+	Short: "选择当前开发项目，举例：isx choose",
 	Long:  `从isxcode组织中选择开发项目`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("choose called")
