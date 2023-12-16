@@ -120,7 +120,7 @@ flink-yun:
           download: no
           name: flink-yun-vip
 version:
-    number: 0.0.2
+    number: 0.0.3
 `)
 			err := viper.ReadConfig(bytes.NewBuffer(yamlExample))
 			if err != nil {
