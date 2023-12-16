@@ -4,8 +4,6 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +13,7 @@ var checkoutCmd = &cobra.Command{
 	Short: "创建需求分支，举例：isx checkout #123",
 	Long:  `从github的latest分支中，基于tag切出需求分支，0.2.0-#123`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("checkout called")
+
 	},
 }
 
