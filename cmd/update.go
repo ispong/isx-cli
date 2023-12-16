@@ -4,23 +4,108 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"os/exec"
+	"strings"
+)
+
+var (
+	latestVersion string
 )
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "更新isx命令，举例：isx update",
+	Long:  `更新isx命令，举例：isx update`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("update called")
+
+		// 获取当前版本中的版本号
+		oldVersion := viper.GetString("version")
+
+		// 获取github中的版本号
+		headers := http.Header{}
+		headers.Set("Accept", "application/vnd.github+json")
+		headers.Set("Authorization", "Bearer "+viper.GetString("token"))
+		headers.Set("X-GitHub-Api-Version", "2022-11-28")
+
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", "https://api.github.com/repos/isxcode/isx-cli/releases/latest", nil)
+		if err != nil {
+			fmt.Println("创建请求失败:", err)
+			os.Exit(1)
+		}
+
+		req.Header = headers
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println("请求失败:", err)
+			os.Exit(1)
+		}
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+
+			}
+		}(resp.Body)
+
+		// 解析结果
+		if resp.StatusCode == http.StatusOK {
+			if resp.StatusCode == http.StatusUnauthorized {
+				fmt.Println("github token权限不足，请重新登录")
+				os.Exit(1)
+			} else {
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Println("Failed to read response body:", err)
+					os.Exit(1)
+				}
+
+				var data map[string]interface{}
+				if err := json.Unmarshal(body, &data); err != nil {
+					fmt.Println("Failed to parse JSON response:", err)
+					os.Exit(1)
+				}
+
+				latestVersion = strings.ReplaceAll(data["name"].(string), "v", "")
+				fmt.Println(latestVersion)
+			}
+		} else {
+			fmt.Println("获取最新版本失败")
+			os.Exit(1)
+		}
+
+		// 版本号进行对比
+		if oldVersion < latestVersion {
+
+			// 执行更新命令
+			executeCommand := "sh -c \"$(curl -fsSL https://raw.githubusercontent.com/isxcode/isx-cli/main/install.sh)\""
+			result := exec.Command("bash", "-c", executeCommand)
+			result.Stdout = os.Stdout
+			result.Stderr = os.Stderr
+
+			err := result.Run()
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				fmt.Println("版本更新成功")
+			}
+
+			// 更新配置中的版本信息
+			viper.Set("version", latestVersion)
+			viper.WriteConfig()
+		} else {
+			fmt.Println("已经是最新版本")
+			os.Exit(1)
+		}
+
 	},
 }
 
