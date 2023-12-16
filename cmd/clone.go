@@ -107,6 +107,13 @@ func cloneProjectCode() {
 		viper.WriteConfig()
 	}
 
+	addUpstreamCommand := "git remote add upstream " + viper.GetString(projectName+".repository.url")
+	addUpstreamCmd := exec.Command("bash", "-c", addUpstreamCommand)
+	addUpstreamCmd.Stdout = os.Stdout
+	addUpstreamCmd.Stderr = os.Stderr
+	addUpstreamCmd.Dir = projectPath + "/" + projectName
+	addUpstreamCmd.Run()
+
 	// 下载子项目代码
 	var subRepository []Repository
 	viper.UnmarshalKey(projectName+".sub-repository", &subRepository)
@@ -129,5 +136,12 @@ func cloneProjectCode() {
 			viper.Set(projectName+".sub-repository", subRepository)
 			viper.WriteConfig()
 		}
+
+		addUpstreamCommand := "git remote add upstream " + repository.Url
+		addUpstreamCmd := exec.Command("bash", "-c", addUpstreamCommand)
+		addUpstreamCmd.Stdout = os.Stdout
+		addUpstreamCmd.Stderr = os.Stderr
+		addUpstreamCmd.Dir = projectPath + "/" + projectName
+		addUpstreamCmd.Run()
 	}
 }
