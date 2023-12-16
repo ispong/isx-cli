@@ -5,8 +5,11 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"log"
+	"os"
+	"os/exec"
 )
 
 // homeCmd represents the home command
@@ -15,7 +18,19 @@ var homeCmd = &cobra.Command{
 	Short: "快速进入项目目录，举例：isx home",
 	Long:  `快速进入项目目录，举例：isx home`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("home called")
+
+		projectName = viper.GetString("current-project.name")
+		executeCommand := "cd " + viper.GetString(projectName+".dir") + "/" + viper.GetString(projectName+".name")
+		cloneCmd := exec.Command("bash", "-c", executeCommand)
+		cloneCmd.Stdout = os.Stdout
+		cloneCmd.Stderr = os.Stderr
+		err := cloneCmd.Run()
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		} else {
+			fmt.Println(viper.GetString(projectName+".dir") + "/" + viper.GetString(projectName+".name") + ":  跳转成功")
+		}
 	},
 }
 
