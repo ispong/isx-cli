@@ -1,9 +1,8 @@
-name: 打包isx工具
+name: 打包isx-cli工具
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
 
@@ -46,18 +45,17 @@ jobs:
       - name: 打包macos环境命令
         run: CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ./target/isx_darwin_arm64 main.go
 
-      - name: 安装node环境
-        uses: actions/setup-node@v1
+      - name: 上传二进制文件
+        uses: actions/upload-artifact@v3
         with:
-          node-version: '12.x'
+          name: i-artifact
+          path: |
+            ./target/isx_windows_amd64.exe
+            ./target/isx_linux_amd64
+            ./target/isx_darwin_arm64
 
-      - name: isx上传到阿里云oss中
-        uses: tiyee/aliyun-oss-auto-upload@v2.0.0
+      - name: 推到github中
+        uses: softprops/action-gh-release@v1
         with:
-          access-key-id: ${{ secrets.OSS_KEY_ID }}
-          access-key-secret: ${{ secrets.OSS_KEY_SECRET }}
-          region: oss-cn-shanghai
-          bucket: openfly
-          remote-dir: /isx/
-          local-folder: ./target
-          secure: true
+          files: target/*
+          token: ${{ secrets.ALL_TOKEN }}
