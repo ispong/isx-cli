@@ -15,12 +15,6 @@ import (
 	"strings"
 )
 
-var (
-	projectNumber int
-	projectPath   string
-	projectName   string
-)
-
 var cloneCmd = &cobra.Command{
 	Use:   "clone",
 	Short: "下载项目代码，举例：isx clone",
@@ -75,12 +69,6 @@ func inputProjectPath() {
 	// 保存配置
 	viper.Set(projectName+".dir", projectPath)
 	viper.WriteConfig()
-}
-
-type Repository struct {
-	Download string `yaml:"download"`
-	Url      string `yaml:"url"`
-	Name     string `yaml:"name"`
 }
 
 func cloneProjectCode() {
