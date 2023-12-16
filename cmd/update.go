@@ -28,12 +28,12 @@ var updateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// 获取当前版本中的版本号
-		oldVersion := viper.GetString("version")
+		oldVersion := viper.GetString("version.number")
 
 		// 获取github中的版本号
 		headers := http.Header{}
 		headers.Set("Accept", "application/vnd.github+json")
-		headers.Set("Authorization", "Bearer "+viper.GetString("token"))
+		headers.Set("Authorization", "Bearer "+viper.GetString("user.token"))
 		headers.Set("X-GitHub-Api-Version", "2022-11-28")
 
 		client := &http.Client{}
@@ -75,7 +75,6 @@ var updateCmd = &cobra.Command{
 				}
 
 				latestVersion = strings.ReplaceAll(data["name"].(string), "v", "")
-				fmt.Println("正在更新到最新版本：" + latestVersion)
 			}
 		} else {
 			fmt.Println("获取最新版本失败")
@@ -95,11 +94,11 @@ var updateCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				fmt.Println("版本更新成功")
+				fmt.Println("已更新到最新版本：" + latestVersion)
 			}
 
 			// 更新配置中的版本信息
-			viper.Set("version", latestVersion)
+			viper.Set("version.number", latestVersion)
 			viper.WriteConfig()
 		} else {
 			fmt.Println("已经是最新版本")

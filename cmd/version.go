@@ -16,7 +16,7 @@ var versionCmd = &cobra.Command{
 	Short: "查看当前版本号，举例：isx version",
 	Long:  `查看当前版本号，举例：isx version`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("当前最新版本号：" + viper.GetString("version"))
+		fmt.Println("当前版本号：v" + viper.GetString("version.number"))
 	},
 }
 
