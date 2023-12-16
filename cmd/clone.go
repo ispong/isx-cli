@@ -57,6 +57,7 @@ func inputProjectNumber() {
 
 	// 输入项目编号
 	fmt.Scanln(&projectNumber)
+	projectName = projectList[projectNumber]
 }
 
 func inputProjectPath() {
