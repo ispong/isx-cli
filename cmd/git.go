@@ -12,6 +12,18 @@ import (
 	"os/exec"
 )
 
+var (
+	gitProjectNumber int
+	gitProjectPath   string
+	gitProjectName   string
+)
+
+type Repository struct {
+	Download string `yaml:"download"`
+	Url      string `yaml:"url"`
+	Name     string `yaml:"name"`
+}
+
 // gitCmd represents the git command
 var gitCmd = &cobra.Command{
 	Use:   "git",
@@ -19,14 +31,14 @@ var gitCmd = &cobra.Command{
 	Long:  `在项目内执行git命令，举例：isx git <git command>`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		projectName = viper.GetString("current-project.name")
-		projectPath = viper.GetString(projectName + ".dir")
+		gitProjectName = viper.GetString("current-project.name")
+		gitProjectPath = viper.GetString(gitProjectName + ".dir")
 
 		// 进入主项目执行命令
 		gitCmd := exec.Command("git", args...)
 		gitCmd.Stdout = os.Stdout
 		gitCmd.Stderr = os.Stderr
-		gitCmd.Dir = projectPath + "/" + projectName
+		gitCmd.Dir = gitProjectPath + "/" + gitProjectName
 		err := gitCmd.Run()
 		if err != nil {
 			log.Fatal(err)
@@ -37,13 +49,13 @@ var gitCmd = &cobra.Command{
 
 		// 进入子项目执行命令
 		var subRepository []Repository
-		viper.UnmarshalKey(projectName+".sub-repository", &subRepository)
+		viper.UnmarshalKey(gitProjectName+".sub-repository", &subRepository)
 		for _, repository := range subRepository {
 
 			gitCmd := exec.Command("git", args...)
 			gitCmd.Stdout = os.Stdout
 			gitCmd.Stderr = os.Stderr
-			gitCmd.Dir = projectPath + "/" + projectName + "/" + repository.Name
+			gitCmd.Dir = gitProjectPath + "/" + gitProjectName + "/" + repository.Name
 			err := gitCmd.Run()
 			if err != nil {
 				log.Fatal(err)

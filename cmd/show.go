@@ -9,6 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	showProjectName string
+)
+
 // showCmd represents the show command
 var showCmd = &cobra.Command{
 	Use:   "show",
@@ -16,11 +20,11 @@ var showCmd = &cobra.Command{
 	Long:  `展示当前项目信息，举例：isx show`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("当前开发项目信息")
-		projectName = viper.GetString("current-project.name")
-		fmt.Println("名称：" + viper.GetString(projectName+".name"))
-		fmt.Println("描述：" + viper.GetString(projectName+".describe"))
-		fmt.Println("路径：" + viper.GetString(projectName+".dir") + "/" + viper.GetString(projectName+".name"))
-		fmt.Println("下载状态：" + viper.GetString(projectName+".repository.download"))
+		showProjectName = viper.GetString("current-project.name")
+		fmt.Println("名称：" + viper.GetString(showProjectName+".name"))
+		fmt.Println("描述：" + viper.GetString(showProjectName+".describe"))
+		fmt.Println("路径：" + viper.GetString(showProjectName+".dir") + "/" + viper.GetString(showProjectName+".name"))
+		fmt.Println("下载状态：" + viper.GetString(showProjectName+".repository.download"))
 	},
 }
 

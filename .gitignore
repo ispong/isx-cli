@@ -6,3 +6,5 @@ src
 goPath
 isx*
 main
+
+target/**

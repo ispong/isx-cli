@@ -13,18 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	projectNumber int
-	projectPath   string
-	projectName   string
-)
-
-type Repository struct {
-	Download string `yaml:"download"`
-	Url      string `yaml:"url"`
-	Name     string `yaml:"name"`
-}
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "isx",

@@ -12,19 +12,24 @@ import (
 	"os/exec"
 )
 
+var (
+	gradleProjectName string
+	gradleProjectPath string
+)
+
 // gradleCmd represents the gradle command
 var gradleCmd = &cobra.Command{
 	Use:   "gradle",
 	Short: "在项目内执行gradle命令，举例：isx gradle [install|start|clean|format|package]",
 	Long:  `gradle install、gradle start、gradle clean、gradle format`,
 	Run: func(cmd *cobra.Command, args []string) {
-		projectName = viper.GetString("current-project.name")
-		projectPath = viper.GetString(projectName + ".dir")
+		gradleProjectName = viper.GetString("current-project.name")
+		gradleProjectPath = viper.GetString(gradleProjectName + ".dir")
 
 		gradleCmd := exec.Command("./gradlew", args...)
 		gradleCmd.Stdout = os.Stdout
 		gradleCmd.Stderr = os.Stderr
-		gradleCmd.Dir = projectPath + "/" + projectName
+		gradleCmd.Dir = gradleProjectPath + "/" + gradleProjectName
 		err := gradleCmd.Run()
 		if err != nil {
 			log.Fatal(err)

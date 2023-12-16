@@ -15,6 +15,18 @@ import (
 	"strings"
 )
 
+var (
+	projectNumber int
+	projectPath   string
+	projectName   string
+)
+
+type CloneRepository struct {
+	Download string `yaml:"download"`
+	Url      string `yaml:"url"`
+	Name     string `yaml:"name"`
+}
+
 var cloneCmd = &cobra.Command{
 	Use:   "clone",
 	Short: "下载项目代码，举例：isx clone",
@@ -103,7 +115,7 @@ func cloneProjectCode() {
 	addUpstreamCmd.Run()
 
 	// 下载子项目代码
-	var subRepository []Repository
+	var subRepository []CloneRepository
 	viper.UnmarshalKey(projectName+".sub-repository", &subRepository)
 	for index, repository := range subRepository {
 		metaRepository := repository.Url

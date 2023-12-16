@@ -10,6 +10,10 @@ import (
 	"strconv"
 )
 
+var (
+	chooseProjectName string
+)
+
 // chooseCmd represents the choose command
 var chooseCmd = &cobra.Command{
 	Use:   "choose",
@@ -19,16 +23,16 @@ var chooseCmd = &cobra.Command{
 
 		// 打印项目列表
 		projectList := viper.GetStringSlice("project-list")
-		for index, projectName := range projectList {
-			fmt.Println("[" + strconv.Itoa(index) + "] " + viper.GetString(projectName+".name") + ": " + viper.GetString(projectName+".describe") + " 下载状态 【" + viper.GetString(projectName+".repository.download") + "】")
+		for index, chooseProjectName := range projectList {
+			fmt.Println("[" + strconv.Itoa(index) + "] " + viper.GetString(chooseProjectName+".name") + ": " + viper.GetString(chooseProjectName+".describe") + " 下载状态 【" + viper.GetString(chooseProjectName+".repository.download") + "】")
 		}
 		fmt.Println("请输入下载项目编号：")
-		fmt.Scanln(&projectNumber)
-		projectName = projectList[projectNumber]
-		fmt.Println("切换到项目：" + projectName)
+		fmt.Scanln(&gitProjectNumber)
+		chooseProjectName = projectList[gitProjectNumber]
+		fmt.Println("切换到项目：" + chooseProjectName)
 
 		// 将当前的项目设置
-		viper.Set("current-project.name", projectList[projectNumber])
+		viper.Set("current-project.name", projectList[gitProjectNumber])
 		viper.WriteConfig()
 	},
 }

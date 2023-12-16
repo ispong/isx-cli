@@ -12,6 +12,10 @@ import (
 	"os/exec"
 )
 
+var (
+	homeProjectName string
+)
+
 // homeCmd represents the home command
 var homeCmd = &cobra.Command{
 	Use:   "home",
@@ -19,8 +23,8 @@ var homeCmd = &cobra.Command{
 	Long:  `快速进入项目目录，举例：isx home`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		projectName = viper.GetString("current-project.name")
-		executeCommand := "cd " + viper.GetString(projectName+".dir") + "/" + viper.GetString(projectName+".name")
+		homeProjectName = viper.GetString("current-project.name")
+		executeCommand := "cd " + viper.GetString(homeProjectName+".dir") + "/" + viper.GetString(homeProjectName+".name")
 		cloneCmd := exec.Command("bash", "-c", executeCommand)
 		cloneCmd.Stdout = os.Stdout
 		cloneCmd.Stderr = os.Stderr
@@ -29,7 +33,7 @@ var homeCmd = &cobra.Command{
 			log.Fatal(err)
 			os.Exit(1)
 		} else {
-			fmt.Println(viper.GetString(projectName+".dir") + "/" + viper.GetString(projectName+".name") + ":  跳转成功")
+			fmt.Println(viper.GetString(homeProjectName+".dir") + "/" + viper.GetString(homeProjectName+".name") + ":  跳转成功")
 		}
 	},
 }
