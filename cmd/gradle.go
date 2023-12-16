@@ -5,30 +5,36 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"log"
+	"os"
+	"os/exec"
 )
 
 // gradleCmd represents the gradle command
 var gradleCmd = &cobra.Command{
 	Use:   "gradle",
-	Short: "在项目内执行gradle命令，举例：isx gradle install",
+	Short: "在项目内执行gradle命令，举例：isx gradle [install|start|clean|format|package]",
 	Long:  `gradle install、gradle start、gradle clean、gradle format`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("gradle called")
+		projectName = viper.GetString("current-project.name")
+		projectPath = viper.GetString(projectName + ".dir")
+
+		gradleCmd := exec.Command("./gradlew", args...)
+		gradleCmd.Stdout = os.Stdout
+		gradleCmd.Stderr = os.Stderr
+		gradleCmd.Dir = projectPath + "/" + projectName
+		err := gradleCmd.Run()
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		} else {
+			fmt.Println("执行成功")
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(gradleCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// gradleCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// gradleCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
