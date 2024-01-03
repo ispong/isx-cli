@@ -1,9 +1,5 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
-import "C"
 import (
 	"fmt"
 	"github.com/spf13/cobra"
@@ -15,59 +11,55 @@ import (
 	"strings"
 )
 
-var (
-	projectNumber int
-	projectPath   string
-	projectName   string
-)
-
-type CloneRepository struct {
-	Download string `yaml:"download"`
-	Url      string `yaml:"url"`
-	Name     string `yaml:"name"`
-}
-
-var cloneCmd = &cobra.Command{
-	Use:   "clone",
-	Short: "下载项目代码，举例：isx clone",
-	Long:  `下载项目代码，举例：isx clone`,
-	Run: func(cmd *cobra.Command, args []string) {
-
-		// 输入项目编号
-		inputProjectNumber()
-
-		// 输入安装路径
-		inputProjectPath()
-
-		// 下载项目代码
-		cloneProjectCode()
-
-		// 将默认项目设置为当前选项
-		viper.Set("current-project.name", projectName)
-		viper.WriteConfig()
-	},
-}
+var projectNumber int
+var projectPath string
+var projectName string
 
 func init() {
 	rootCmd.AddCommand(cloneCmd)
 }
 
+var cloneCmd = &cobra.Command{
+	Use:   "clone",
+	Short: "下载项目源码",
+	Long:  `isx clone`,
+	Run: func(cmd *cobra.Command, args []string) {
+		cloneCmdMain()
+	},
+}
+
+func cloneCmdMain() {
+
+	// 选择项目编号
+	inputProjectNumber()
+
+	// 输入安装路径
+	inputProjectPath()
+
+	// 下载项目代码
+	cloneProjectCode()
+
+	// 保存配置
+	saveConfig()
+}
+
 func inputProjectNumber() {
 
-	// 打印可选项目编号
+	// 打印项目列表
 	projectList := viper.GetStringSlice("project-list")
 	for index, projectName := range projectList {
 		fmt.Println("[" + strconv.Itoa(index) + "] " + viper.GetString(projectName+".name") + ": " + viper.GetString(projectName+".describe"))
 	}
-	fmt.Println("请输入下载项目编号：")
 
 	// 输入项目编号
+	fmt.Print("请输入下载项目编号：")
 	fmt.Scanln(&projectNumber)
 	projectName = projectList[projectNumber]
 }
 
 func inputProjectPath() {
 
+	// 输入安装路径
 	fmt.Print("请输入安装路径:")
 	fmt.Scanln(&projectPath)
 
@@ -77,71 +69,58 @@ func inputProjectPath() {
 		fmt.Println("目录不存在，请重新输入")
 		os.Exit(1)
 	}
-
-	// 保存配置
-	viper.Set(projectName+".dir", projectPath)
-	viper.WriteConfig()
 }
 
-func cloneProjectCode() {
+func cloneCode(repositoryUrl string, path string, name string, isMain bool) {
 
-	// 构建下载链接
-	projectName := viper.GetStringSlice("project-list")[projectNumber]
-	mainRepository := viper.GetString(projectName + ".repository.url")
-	strings.Replace(mainRepository, "isxcode", viper.GetString("user.account"), -1)
-	strings.Replace(mainRepository, "https://", "https://"+viper.GetString("user.token")+"@", -1)
+	// 替换下载链接
+	repositoryOldUrl := repositoryUrl
+	strings.Replace(repositoryUrl, "isxcode", viper.GetString("user.account"), -1)
+	strings.Replace(repositoryUrl, "https://", "https://"+viper.GetString("user.token")+"@", -1)
 
 	// 下载主项目代码
-	executeCommand := "git clone " + mainRepository
+	executeCommand := "git clone " + repositoryUrl
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
 	cloneCmd.Stdout = os.Stdout
 	cloneCmd.Stderr = os.Stderr
-	cloneCmd.Dir = projectPath
+	cloneCmd.Dir = path
 	err := cloneCmd.Run()
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	} else {
-		fmt.Println("下载成功")
-		viper.Set(projectName+".repository.download", "ok")
-		viper.WriteConfig()
+		if isMain {
+			viper.Set(projectName+".repository.download", "ok")
+			viper.WriteConfig()
+		}
+		fmt.Println(name + "下载成功")
 	}
 
-	addUpstreamCommand := "git remote add upstream " + viper.GetString(projectName+".repository.url")
+	// 添加远程仓库
+	addUpstreamCommand := "git remote add upstream " + repositoryOldUrl
 	addUpstreamCmd := exec.Command("bash", "-c", addUpstreamCommand)
 	addUpstreamCmd.Stdout = os.Stdout
 	addUpstreamCmd.Stderr = os.Stderr
-	addUpstreamCmd.Dir = projectPath + "/" + projectName
+	addUpstreamCmd.Dir = path + "/" + name
 	addUpstreamCmd.Run()
+}
+
+func cloneProjectCode() {
+
+	// 下载主项目代码
+	mainRepository := viper.GetString(projectName + ".repository.url")
+	cloneCode(mainRepository, projectPath, projectName, true)
 
 	// 下载子项目代码
-	var subRepository []CloneRepository
+	var subRepository []Repository
 	viper.UnmarshalKey(projectName+".sub-repository", &subRepository)
-	for index, repository := range subRepository {
-		metaRepository := repository.Url
-		strings.Replace(metaRepository, "isxcode", viper.GetString("user.account"), -1)
-		strings.Replace(metaRepository, "https://", "https://"+viper.GetString("user.toke")+"@", -1)
-		executeCommand := "git clone " + metaRepository
-		cloneCmd := exec.Command("bash", "-c", executeCommand)
-		cloneCmd.Stdout = os.Stdout
-		cloneCmd.Stderr = os.Stderr
-		cloneCmd.Dir = projectPath + "/" + projectName
-		err := cloneCmd.Run()
-		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
-		} else {
-			fmt.Println("下载成功")
-			subRepository[index].Download = "ok"
-			viper.Set(projectName+".sub-repository", subRepository)
-			viper.WriteConfig()
-		}
-
-		addUpstreamCommand := "git remote add upstream " + repository.Url
-		addUpstreamCmd := exec.Command("bash", "-c", addUpstreamCommand)
-		addUpstreamCmd.Stdout = os.Stdout
-		addUpstreamCmd.Stderr = os.Stderr
-		addUpstreamCmd.Dir = projectPath + "/" + projectName
-		addUpstreamCmd.Run()
+	for _, repository := range subRepository {
+		cloneCode(repository.Url, projectPath+"/"+projectName, repository.Name, false)
 	}
+}
+
+func saveConfig() {
+	viper.Set(projectName+".dir", projectPath)
+	viper.Set("current-project.name", projectName)
+	viper.WriteConfig()
 }

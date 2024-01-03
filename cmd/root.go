@@ -99,25 +99,23 @@ project-list:
     - flink-yun 
 spark-yun:
     name: spark-yun
-    describe: 至爻云-轻（至轻云）
+    describe: 至轻云
     dir: ""
     repository:
         url: https://github.com/isxcode/spark-yun.git
         download: no
     sub-repository:
         - url: https://github.com/isxcode/spark-yun-vip.git
-          download: no
           name: spark-yun-vip
 flink-yun:
     name: flink-yun
-    describe: 至爻云-流（至流云）
+    describe: 至流云
     dir: ""
     repository:
         url: https://github.com/isxcode/flink-yun.git
         download: no
     sub-repository:
         - url: https://github.com/isxcode/flink-yun-vip.git
-          download: no
           name: flink-yun-vip
 version:
     number: 0.0.3

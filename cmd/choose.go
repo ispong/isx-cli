@@ -1,52 +1,48 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 	"strconv"
 )
 
-var (
-	chooseProjectName string
-)
+func init() {
+	rootCmd.AddCommand(chooseCmd)
+}
 
-// chooseCmd represents the choose command
 var chooseCmd = &cobra.Command{
 	Use:   "choose",
-	Short: "选择当前开发项目，举例：isx choose",
-	Long:  `从isxcode组织中选择开发项目`,
+	Short: "选择当前开发项目",
+	Long:  `从isxcode组织中选择开发项目,isx choose`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		// 打印项目列表
-		projectList := viper.GetStringSlice("project-list")
-		for index, chooseProjectName := range projectList {
-			fmt.Println("[" + strconv.Itoa(index) + "] " + viper.GetString(chooseProjectName+".name") + ": " + viper.GetString(chooseProjectName+".describe") + " 下载状态 【" + viper.GetString(chooseProjectName+".repository.download") + "】")
-		}
-		fmt.Println("请输入下载项目编号：")
-		fmt.Scanln(&gitProjectNumber)
-		chooseProjectName = projectList[gitProjectNumber]
-		fmt.Println("切换到项目：" + chooseProjectName)
-
-		// 将当前的项目设置
-		viper.Set("current-project.name", projectList[gitProjectNumber])
-		viper.WriteConfig()
+		chooseCmdMain()
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(chooseCmd)
+func chooseCmdMain() {
 
-	// Here you will define your flags and configuration settings.
+	// 打印项目列表
+	projectList := viper.GetStringSlice("project-list")
+	for index, chooseProjectName := range projectList {
+		fmt.Println("[" + strconv.Itoa(index) + "] " + viper.GetString(chooseProjectName+".name") + ": " + viper.GetString(chooseProjectName+".describe") + " 下载状态 【" + viper.GetString(chooseProjectName+".repository.download") + "】")
+	}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// chooseCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// 选择项目编号
+	fmt.Print("请输入下载项目编号：")
+	fmt.Scanln(&projectNumber)
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// chooseCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// 判断项目是否可切换
+	projectName := projectList[projectNumber]
+	isDownload := viper.GetString(projectName + ".repository.download")
+	if isDownload != "ok" {
+		fmt.Println("不可选择，请先下载代码")
+		os.Exit(1)
+	}
+
+	// 设置当前的项目
+	fmt.Println("切换到项目：" + projectName)
+	viper.Set("current-project.name", projectName)
+	viper.WriteConfig()
 }

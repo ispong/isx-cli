@@ -12,11 +12,8 @@ import (
 	"os/exec"
 )
 
-var (
-	gitProjectNumber int
-	gitProjectPath   string
-	gitProjectName   string
-)
+var gitProjectPath string
+var gitProjectName string
 
 type Repository struct {
 	Download string `yaml:"download"`
