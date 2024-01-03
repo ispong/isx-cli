@@ -35,11 +35,27 @@ func buildCmdMain() {
 	if cacheGradleDir == "" {
 		cacheGradleDir = usr.HomeDir + "/.gradle"
 	}
+	_, err := os.Stat(cacheGradleDir)
+	if os.IsNotExist(err) {
+		err := os.Mkdir(cacheGradleDir, 0755)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
 
 	// 获取pnpm缓存目录
 	cachePnpmDir := viper.GetString("cache.pnpm.dir")
 	if cachePnpmDir == "" {
 		cachePnpmDir = usr.HomeDir + "/.pnpm-store"
+	}
+	_, err = os.Stat(cachePnpmDir)
+	if os.IsNotExist(err) {
+		err := os.Mkdir(cachePnpmDir, 0755)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	// 下载主项目代码
@@ -52,7 +68,7 @@ func buildCmdMain() {
 	buildCmd := exec.Command("bash", "-c", buildCommand)
 	buildCmd.Stdout = os.Stdout
 	buildCmd.Stderr = os.Stderr
-	err := buildCmd.Run()
+	err = buildCmd.Run()
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
