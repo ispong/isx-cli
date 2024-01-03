@@ -91,6 +91,11 @@ func initConfig() {
 			var yamlExample = []byte(`
 current-project:
     name: ""
+cache:
+    gradle:
+        dir: ""
+    pnpm:
+        dir: ""
 user:
     account: ""
     token: ""
