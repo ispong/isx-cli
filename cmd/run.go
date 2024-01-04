@@ -91,7 +91,7 @@ func runCmdMain(runType string, port string) {
 		break
 	case "website":
 		runCommand = "docker run " +
-			"-e ENV_TYPE='WEBSITE'" +
+			"-e ENV_TYPE='WEBSITE' " +
 			"-p " + port + ":3000 " +
 			"-v " + projectPath + ":/spark-yun " +
 			"-v " + cachePnpmDir + ":/root/.pnpm-store " +

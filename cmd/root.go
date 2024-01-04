@@ -47,6 +47,12 @@ var (
 	cfgFile string
 )
 
+type Repository struct {
+	Download string `yaml:"download"`
+	Url      string `yaml:"url"`
+	Name     string `yaml:"name"`
+}
+
 func init() {
 	cobra.OnInitialize(initConfig)
 

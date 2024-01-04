@@ -1,6 +1,3 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -15,55 +12,52 @@ import (
 var gitProjectPath string
 var gitProjectName string
 
-type Repository struct {
-	Download string `yaml:"download"`
-	Url      string `yaml:"url"`
-	Name     string `yaml:"name"`
+func init() {
+	rootCmd.AddCommand(gitCmd)
 }
 
-// gitCmd represents the git command
 var gitCmd = &cobra.Command{
 	Use:   "git",
-	Short: "在项目内执行git命令，举例：isx git <git command>",
-	Long:  `在项目内执行git命令，举例：isx git <git command>`,
+	Short: "在项目内执行git命令",
+	Long:  `isx git <git command>`,
 	Run: func(cmd *cobra.Command, args []string) {
+		gitCmdMain(args)
+	},
+}
 
-		gitProjectName = viper.GetString("current-project.name")
-		gitProjectPath = viper.GetString(gitProjectName + ".dir")
+func gitCmdMain(args []string) {
 
-		// 进入主项目执行命令
+	gitProjectName = viper.GetString("current-project.name")
+	gitProjectPath = viper.GetString(gitProjectName + ".dir")
+
+	// 进入主项目执行git命令
+	gitCmd := exec.Command("git", args...)
+	gitCmd.Stdout = os.Stdout
+	gitCmd.Stderr = os.Stderr
+	gitCmd.Dir = gitProjectPath + "/" + gitProjectName
+	err := gitCmd.Run()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	} else {
+		fmt.Println(gitProjectName + "git命令执行成功")
+	}
+
+	// 进入子项目执行命令
+	var subRepository []Repository
+	viper.UnmarshalKey(gitProjectName+".sub-repository", &subRepository)
+	for _, repository := range subRepository {
+
 		gitCmd := exec.Command("git", args...)
 		gitCmd.Stdout = os.Stdout
 		gitCmd.Stderr = os.Stderr
-		gitCmd.Dir = gitProjectPath + "/" + gitProjectName
+		gitCmd.Dir = gitProjectPath + "/" + gitProjectName + "/" + repository.Name
 		err := gitCmd.Run()
 		if err != nil {
 			log.Fatal(err)
 			os.Exit(1)
 		} else {
-			fmt.Println("执行成功")
+			fmt.Println(repository.Name + "git命令执行成功")
 		}
-
-		// 进入子项目执行命令
-		var subRepository []Repository
-		viper.UnmarshalKey(gitProjectName+".sub-repository", &subRepository)
-		for _, repository := range subRepository {
-
-			gitCmd := exec.Command("git", args...)
-			gitCmd.Stdout = os.Stdout
-			gitCmd.Stderr = os.Stderr
-			gitCmd.Dir = gitProjectPath + "/" + gitProjectName + "/" + repository.Name
-			err := gitCmd.Run()
-			if err != nil {
-				log.Fatal(err)
-				os.Exit(1)
-			} else {
-				fmt.Println("执行成功")
-			}
-		}
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(gitCmd)
+	}
 }
