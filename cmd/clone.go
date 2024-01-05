@@ -75,8 +75,8 @@ func cloneCode(repositoryUrl string, path string, name string, isMain bool) {
 
 	// 替换下载链接
 	repositoryOldUrl := repositoryUrl
-	strings.Replace(repositoryUrl, "isxcode", viper.GetString("user.account"), -1)
-	strings.Replace(repositoryUrl, "https://", "https://"+viper.GetString("user.token")+"@", -1)
+	repositoryUrl = strings.Replace(repositoryUrl, "isxcode", viper.GetString("user.account"), -1)
+	repositoryUrl = strings.Replace(repositoryUrl, "https://", "https://"+viper.GetString("user.token")+"@", -1)
 
 	// 下载主项目代码
 	executeCommand := "git clone " + repositoryUrl
