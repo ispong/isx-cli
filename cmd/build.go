@@ -71,8 +71,9 @@ func buildCmdMain() {
 	err = buildCmd.Run()
 	if err != nil {
 		log.Fatal(err)
+		fmt.Println("代码编译失败")
 		os.Exit(1)
 	} else {
-		fmt.Println("代码正在编译")
+		fmt.Println("代码编译完成")
 	}
 }
