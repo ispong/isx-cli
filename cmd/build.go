@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
-	"time"
 )
 
 func init() {
@@ -64,13 +63,12 @@ func buildCmdMain() {
 	}
 
 	// 镜像编译代码
-	start := time.Now()
 	buildCommand := "docker run " +
 		"--rm " +
 		"-v " + projectPath + ":/spark-yun " +
 		"-v " + cachePnpmDir + ":/root/.pnpm-store " +
 		"-v " + cacheGradleDir + ":/root/.gradle " +
-		" " + buildImage
+		buildImage
 	buildCmd := exec.Command("bash", "-c", buildCommand)
 	buildCmd.Stdout = os.Stdout
 	buildCmd.Stderr = os.Stderr
@@ -82,6 +80,4 @@ func buildCmdMain() {
 	} else {
 		fmt.Println("代码编译完成")
 	}
-	duration := time.Since(start)
-	fmt.Println("Execution time:", duration)
 }

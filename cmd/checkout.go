@@ -63,29 +63,29 @@ func checkoutCmdMain(issueNumber string) {
 
 		projectName := viper.GetString("current-project.name")
 		projectPath := viper.GetString(projectName+".dir") + "/" + projectName
-		checkoutRemoteBranch(projectPath, branch)
+		checkoutOriginBranch(projectPath, branch)
 
 		var subRepository []Repository
 		viper.UnmarshalKey(viper.GetString("current-project.name")+".sub-repository", &subRepository)
 		for _, repository := range subRepository {
-			checkoutRemoteBranch(projectPath+"/"+repository.Name, branch)
+			checkoutOriginBranch(projectPath+"/"+repository.Name, branch)
 		}
 
 		return
 	}
 
-	// isxcode仓库有分支，直接切换
+	// 远程没分支，isxcode仓库有分支，直接切换
 	branch = getGithubBranch(branchName, "isxcode")
 	if branch != "" {
 
 		projectName := viper.GetString("current-project.name")
 		projectPath := viper.GetString(projectName+".dir") + "/" + projectName
-		checkoutRemoteBranch(projectPath, branch)
+		checkoutUpstreamBranch(projectPath, branch)
 
 		var subRepository []Repository
 		viper.UnmarshalKey(viper.GetString("current-project.name")+".sub-repository", &subRepository)
 		for _, repository := range subRepository {
-			checkoutRemoteBranch(projectPath+"/"+repository.Name, branch)
+			checkoutUpstreamBranch(projectPath+"/"+repository.Name, branch)
 		}
 
 		return
@@ -98,24 +98,24 @@ func checkoutCmdMain(issueNumber string) {
 	if fatherBranchName == "main" {
 		projectName := viper.GetString("current-project.name")
 		projectPath := viper.GetString(projectName+".dir") + "/" + projectName
-		checkoutIsxcodeMainBranch(projectPath, branch)
+		createMainBranch(projectPath, branch)
 
 		var subRepository []Repository
 		viper.UnmarshalKey(viper.GetString("current-project.name")+".sub-repository", &subRepository)
 		for _, repository := range subRepository {
-			checkoutIsxcodeMainBranch(projectPath+"/"+repository.Name, branch)
+			createMainBranch(projectPath+"/"+repository.Name, branch)
 		}
 
 		return
 	} else {
 		projectName := viper.GetString("current-project.name")
 		projectPath := viper.GetString(projectName+".dir") + "/" + projectName
-		checkoutIsxcodeBugBranch(projectPath, branch)
+		createReleaseBranch(projectPath, branch)
 
 		var subRepository []Repository
 		viper.UnmarshalKey(viper.GetString("current-project.name")+".sub-repository", &subRepository)
 		for _, repository := range subRepository {
-			checkoutIsxcodeBugBranch(projectPath+"/"+repository.Name, branch)
+			createReleaseBranch(projectPath+"/"+repository.Name, branch)
 		}
 
 		return
@@ -207,7 +207,7 @@ func checkoutLocalBranch(path string, branchName string) {
 	}
 }
 
-func checkoutIsxcodeMainBranch(path string, branchName string) {
+func createMainBranch(path string, branchName string) {
 
 	executeCommand := "git fetch upstream && git checkout --track upstream/" + branchName
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
@@ -223,7 +223,7 @@ func checkoutIsxcodeMainBranch(path string, branchName string) {
 	}
 }
 
-func checkoutIsxcodeBugBranch(path string, branchName string) {
+func createReleaseBranch(path string, branchName string) {
 
 	executeCommand := "git fetch upstream && git checkout --track upstream/" + branchName
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
@@ -239,7 +239,23 @@ func checkoutIsxcodeBugBranch(path string, branchName string) {
 	}
 }
 
-func checkoutRemoteBranch(path string, branchName string) {
+func checkoutOriginBranch(path string, branchName string) {
+
+	executeCommand := "git fetch && git checkout --track origin/" + branchName
+	cloneCmd := exec.Command("bash", "-c", executeCommand)
+	cloneCmd.Stdout = os.Stdout
+	cloneCmd.Stderr = os.Stderr
+	cloneCmd.Dir = path
+	err := cloneCmd.Run()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	} else {
+		fmt.Println("本地存在" + branchName + "，切换成功")
+	}
+}
+
+func checkoutUpstreamBranch(path string, branchName string) {
 
 	executeCommand := "git fetch && git checkout --track origin/" + branchName
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
