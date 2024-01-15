@@ -30,7 +30,7 @@ var runCmd = &cobra.Command{
 
 		if len(args) == 1 {
 			switch args[0] {
-			case "backend", "frontend", "website":
+			case "backend", "frontend", "web":
 				runType = args[0]
 				port = "8080"
 			default:
@@ -49,7 +49,7 @@ var runCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if runType != "all" && runType != "backend" && runType != "website" && runType != "frontend" {
+		if runType != "all" && runType != "backend" && runType != "web" && runType != "frontend" {
 			fmt.Println("使用方式不对，请重新输入命令")
 			os.Exit(1)
 		}
@@ -118,9 +118,9 @@ func runCmdMain(runType string, port string) {
 			"-p " + port + ":8080 " +
 			"-d registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
 		break
-	case "website":
+	case "web":
 		runCommand = "docker run " +
-			"-e ENV_TYPE='WEBSITE' " +
+			"-e ENV_TYPE='WEB' " +
 			"-p " + port + ":3000 " +
 			"-v " + projectPath + ":/spark-yun " +
 			"-v " + cachePnpmDir + ":/root/.pnpm-store " +
@@ -139,6 +139,6 @@ func runCmdMain(runType string, port string) {
 		log.Fatal(err)
 		os.Exit(1)
 	} else {
-		fmt.Println("代码正在运行")
+		fmt.Println("代码正在运行，请访问地址 http://localhost:" + port)
 	}
 }
