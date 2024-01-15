@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"time"
 )
 
 func init() {
@@ -16,7 +17,7 @@ func init() {
 
 var buildCmd = &cobra.Command{
 	Use:   "build",
-	Short: "编译本地代码",
+	Short: "编译代码",
 	Long:  `isx build`,
 	Run: func(cmd *cobra.Command, args []string) {
 		buildCmdMain()
@@ -34,6 +35,8 @@ func buildCmdMain() {
 	cacheGradleDir := viper.GetString("cache.gradle.dir")
 	if cacheGradleDir == "" {
 		cacheGradleDir = usr.HomeDir + "/.gradle"
+		viper.Set("cache.gradle.dir", cacheGradleDir)
+		viper.WriteConfig()
 	}
 	_, err := os.Stat(cacheGradleDir)
 	if os.IsNotExist(err) {
@@ -48,6 +51,8 @@ func buildCmdMain() {
 	cachePnpmDir := viper.GetString("cache.pnpm.dir")
 	if cachePnpmDir == "" {
 		cachePnpmDir = usr.HomeDir + "/.pnpm-store"
+		viper.Set("cache.pnpm.dir", cachePnpmDir)
+		viper.WriteConfig()
 	}
 	_, err = os.Stat(cachePnpmDir)
 	if os.IsNotExist(err) {
@@ -58,7 +63,8 @@ func buildCmdMain() {
 		}
 	}
 
-	// 下载主项目代码
+	// 镜像编译代码
+	start := time.Now()
 	buildCommand := "docker run " +
 		"--rm " +
 		"-v " + projectPath + ":/spark-yun " +
@@ -76,4 +82,6 @@ func buildCmdMain() {
 	} else {
 		fmt.Println("代码编译完成")
 	}
+	duration := time.Since(start)
+	fmt.Println("Execution time:", duration)
 }

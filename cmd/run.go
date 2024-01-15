@@ -16,16 +16,45 @@ func init() {
 
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "运行代码",
-	Long:  `isx run frontend 8888/ isx run backend 8888/ isx run all 8888/isx run website 8888`,
+	Short: "运行项目",
+	Long:  `isx run frontend 8888/ isx run backend 8888/ isx run 8888/isx run website 8888`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if len(args) != 2 {
+		runType := ""
+		port := ""
+
+		if len(args) < 1 {
+			runType = "all"
+			port = "8080"
+		}
+
+		if len(args) == 1 {
+			switch args[0] {
+			case "backend", "frontend", "website":
+				runType = args[0]
+				port = "8080"
+			default:
+				runType = "all"
+				port = args[0]
+			}
+		}
+
+		if len(args) == 2 {
+			runType = args[0]
+			port = args[1]
+		}
+
+		if len(args) > 2 {
 			fmt.Println("使用方式不对，请重新输入命令")
 			os.Exit(1)
 		}
 
-		runCmdMain(args[0], args[1])
+		if runType != "all" && runType != "backend" && runType != "website" && runType != "frontend" {
+			fmt.Println("使用方式不对，请重新输入命令")
+			os.Exit(1)
+		}
+
+		runCmdMain(runType, port)
 	},
 }
 
