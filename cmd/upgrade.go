@@ -19,7 +19,7 @@ func init() {
 
 var upgradeCmd = &cobra.Command{
 	Use:   "upgrade",
-	Short: "更新isx-cli命令",
+	Short: printCommand("isx upgrade") + "| 更新isx-cli",
 	Long:  `isx upgrade`,
 	Run: func(cmd *cobra.Command, args []string) {
 		upgradeCmdMain()

@@ -9,6 +9,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -27,12 +28,13 @@ var rootCmd = &cobra.Command{
 |____|\___||__|__|       \____||_____||____|
 
 欢迎使用isx-cli脚手架
-代码地址：https://github.com/isxcode/isx-cli
+代码仓库：https://github.com/isxcode/isx-cli
 
 `,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		cmd.DisableFlagParsing = true
 	},
+
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -148,4 +150,9 @@ version:
 			}
 		}
 	}
+}
+
+func printCommand(commandDesc string) string {
+
+	return commandDesc + strings.Repeat(" ", 65-len(commandDesc))
 }
