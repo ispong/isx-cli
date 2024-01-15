@@ -27,6 +27,7 @@ var rootCmd = &cobra.Command{
 |____|\___||__|__|       \____||_____||____|
 
 欢迎使用isx-cli脚手架
+代码地址：https://github.com/isxcode/isx-cli
 
 `,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {

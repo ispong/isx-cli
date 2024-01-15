@@ -23,7 +23,7 @@ func init() {
 
 var checkoutCmd = &cobra.Command{
 	Use:   "checkout",
-	Short: "创建需求分支",
+	Short: "isx checkout <issue_number>，切开发分支",
 	Long:  `isx checkout 123`,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -38,6 +38,7 @@ var checkoutCmd = &cobra.Command{
 
 func checkoutCmdMain(issueNumber string) {
 
+	// 分支名
 	branchName := "GH-" + issueNumber
 
 	// 本地有分支，直接切换
@@ -92,10 +93,11 @@ func checkoutCmdMain(issueNumber string) {
 	}
 
 	// 哪里都没有分支，自己创建分支
-	fatherBranchName := getGithubIssueBranch(issueNumber)
+	releaseBranchName := getGithubIssueBranch(issueNumber)
+	branch = "GH-" + issueNumber
 
 	// 本地切出分支
-	if fatherBranchName == "main" {
+	if releaseBranchName == "main" {
 		projectName := viper.GetString("current-project.name")
 		projectPath := viper.GetString(projectName+".dir") + "/" + projectName
 		createMainBranch(projectPath, branch)
@@ -110,12 +112,12 @@ func checkoutCmdMain(issueNumber string) {
 	} else {
 		projectName := viper.GetString("current-project.name")
 		projectPath := viper.GetString(projectName+".dir") + "/" + projectName
-		createReleaseBranch(projectPath, branch)
+		createReleaseBranch(projectPath, branch, releaseBranchName)
 
 		var subRepository []Repository
 		viper.UnmarshalKey(viper.GetString("current-project.name")+".sub-repository", &subRepository)
 		for _, repository := range subRepository {
-			createReleaseBranch(projectPath+"/"+repository.Name, branch)
+			createReleaseBranch(projectPath+"/"+repository.Name, branch, releaseBranchName)
 		}
 
 		return
@@ -209,7 +211,7 @@ func checkoutLocalBranch(path string, branchName string) {
 
 func createMainBranch(path string, branchName string) {
 
-	executeCommand := "git fetch upstream && git checkout --track upstream/" + branchName
+	executeCommand := "git fetch upstream && git checkout -b " + branchName + " upstream/main"
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
 	cloneCmd.Stdout = os.Stdout
 	cloneCmd.Stderr = os.Stderr
@@ -221,11 +223,39 @@ func createMainBranch(path string, branchName string) {
 	} else {
 		fmt.Println("本地存在" + branchName + "，切换成功")
 	}
+
+	// 推到isxcode仓库
+	pushUpstreamCommand := "git push upstream " + branchName
+	pushUpstreamCmd := exec.Command("bash", "-c", pushUpstreamCommand)
+	pushUpstreamCmd.Stdout = os.Stdout
+	pushUpstreamCmd.Stderr = os.Stderr
+	pushUpstreamCmd.Dir = path
+	err = pushUpstreamCmd.Run()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	} else {
+		fmt.Println(branchName + "创建成功")
+	}
+
+	// 推到自己的仓库
+	pushOriginCommand := "git push origin " + branchName
+	pushOriginCmd := exec.Command("bash", "-c", pushOriginCommand)
+	pushOriginCmd.Stdout = os.Stdout
+	pushOriginCmd.Stderr = os.Stderr
+	pushOriginCmd.Dir = path
+	err = pushOriginCmd.Run()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	} else {
+		fmt.Println(branchName + "创建成功")
+	}
 }
 
-func createReleaseBranch(path string, branchName string) {
+func createReleaseBranch(path string, branchName string, releaseName string) {
 
-	executeCommand := "git fetch upstream && git checkout --track upstream/" + branchName
+	executeCommand := "git fetch upstream && git checkout -b " + branchName + " upstream/" + releaseName
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
 	cloneCmd.Stdout = os.Stdout
 	cloneCmd.Stderr = os.Stderr
@@ -235,7 +265,35 @@ func createReleaseBranch(path string, branchName string) {
 		log.Fatal(err)
 		os.Exit(1)
 	} else {
-		fmt.Println("本地存在" + branchName + "，切换成功")
+		fmt.Println(branchName + "创建成功")
+	}
+
+	// 推到isxcode仓库
+	pushUpstreamCommand := "git push upstream " + branchName
+	pushUpstreamCmd := exec.Command("bash", "-c", pushUpstreamCommand)
+	pushUpstreamCmd.Stdout = os.Stdout
+	pushUpstreamCmd.Stderr = os.Stderr
+	pushUpstreamCmd.Dir = path
+	err = pushUpstreamCmd.Run()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	} else {
+		fmt.Println(branchName + "，已推到upstream仓库")
+	}
+
+	// 推到自己的仓库
+	pushOriginCommand := "git push origin " + branchName
+	pushOriginCmd := exec.Command("bash", "-c", pushOriginCommand)
+	pushOriginCmd.Stdout = os.Stdout
+	pushOriginCmd.Stderr = os.Stderr
+	pushOriginCmd.Dir = path
+	err = pushOriginCmd.Run()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	} else {
+		fmt.Println(branchName + "，已推到origin仓库")
 	}
 }
 
@@ -257,7 +315,7 @@ func checkoutOriginBranch(path string, branchName string) {
 
 func checkoutUpstreamBranch(path string, branchName string) {
 
-	executeCommand := "git fetch && git checkout --track origin/" + branchName
+	executeCommand := "git fetch upstream && git checkout -b " + branchName + " upstream/" + branchName
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
 	cloneCmd.Stdout = os.Stdout
 	cloneCmd.Stderr = os.Stderr
@@ -267,8 +325,23 @@ func checkoutUpstreamBranch(path string, branchName string) {
 		log.Fatal(err)
 		os.Exit(1)
 	} else {
-		fmt.Println("本地存在" + branchName + "，切换成功")
+		fmt.Println(branchName + "，切换成功")
 	}
+
+	// 推到自己的仓库
+	pushOriginCommand := "git push origin " + branchName
+	pushOriginCmd := exec.Command("bash", "-c", pushOriginCommand)
+	pushOriginCmd.Stdout = os.Stdout
+	pushOriginCmd.Stderr = os.Stderr
+	pushOriginCmd.Dir = path
+	err = pushOriginCmd.Run()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	} else {
+		fmt.Println(branchName + "，已推到origin仓库")
+	}
+
 }
 
 func getGithubIssueBranch(issueNumber string) string {
@@ -303,7 +376,6 @@ func getGithubIssueBranch(issueNumber string) string {
 
 	// 解析结果
 	if resp.StatusCode == http.StatusOK {
-		fmt.Println(string(body))
 		var content GithubIssue
 		err := json.Unmarshal(body, &content)
 		if err != nil {
