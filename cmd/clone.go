@@ -71,15 +71,13 @@ func inputProjectPath() {
 	}
 }
 
-func cloneCode(repositoryUrl string, path string, name string, isMain bool) {
+func cloneCode(isxcodeRepository string, path string, name string, isMain bool) {
 
 	// 替换下载链接
-	repositoryOldUrl := repositoryUrl
-	repositoryUrl = strings.Replace(repositoryUrl, "isxcode", viper.GetString("user.account"), -1)
-	repositoryUrl = strings.Replace(repositoryUrl, "https://", "https://"+viper.GetString("user.token")+"@", -1)
+	isxcodeRepository = strings.Replace(isxcodeRepository, "https://", "https://"+viper.GetString("user.token")+"@", -1)
 
 	// 下载主项目代码
-	executeCommand := "git clone " + repositoryUrl
+	executeCommand := "git clone -b main " + isxcodeRepository
 	cloneCmd := exec.Command("bash", "-c", executeCommand)
 	cloneCmd.Stdout = os.Stdout
 	cloneCmd.Stderr = os.Stderr
@@ -96,21 +94,22 @@ func cloneCode(repositoryUrl string, path string, name string, isMain bool) {
 		fmt.Println(name + "下载成功")
 	}
 
-	// 添加远程仓库
-	addUpstreamCommand := "git remote add upstream " + repositoryOldUrl + " && git fetch upstream"
+	// 将origin改为个人的
+	userRepository := strings.Replace(isxcodeRepository, "isxcode", viper.GetString("user.account"), -1)
+	updateOriginCommand := "git remote set-url origin " + userRepository + " && git fetch origin"
+	updateOriginCmd := exec.Command("bash", "-c", updateOriginCommand)
+	updateOriginCmd.Stdout = os.Stdout
+	updateOriginCmd.Stderr = os.Stderr
+	updateOriginCmd.Dir = path + "/" + name
+	updateOriginCmd.Run()
+
+	// 添加upstream仓库
+	addUpstreamCommand := "git remote add upstream " + isxcodeRepository + " && git fetch upstream"
 	addUpstreamCmd := exec.Command("bash", "-c", addUpstreamCommand)
 	addUpstreamCmd.Stdout = os.Stdout
 	addUpstreamCmd.Stderr = os.Stderr
 	addUpstreamCmd.Dir = path + "/" + name
 	addUpstreamCmd.Run()
-
-	// 把main分支绑定为isxcode仓库的分支
-	linkMainBranchCommand := "git branch --set-upstream-to=upstream/main main"
-	linkMainBranchCmd := exec.Command("bash", "-c", linkMainBranchCommand)
-	linkMainBranchCmd.Stdout = os.Stdout
-	linkMainBranchCmd.Stderr = os.Stderr
-	linkMainBranchCmd.Dir = path + "/" + name
-	linkMainBranchCmd.Run()
 }
 
 func cloneProjectCode() {
