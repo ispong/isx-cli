@@ -29,6 +29,9 @@ var rootCmd = &cobra.Command{
 欢迎使用isx-cli脚手架
 
 `,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		cmd.DisableFlagParsing = true
+	},
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },

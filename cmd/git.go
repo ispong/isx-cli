@@ -22,7 +22,7 @@ var gitCmd = &cobra.Command{
 	Long:  `isx git <git command>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		gitCmdMain(args)
-	},
+	}, DisableFlagParsing: true,
 }
 
 func gitCmdMain(args []string) {

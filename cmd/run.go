@@ -30,9 +30,18 @@ var runCmd = &cobra.Command{
 
 		if len(args) == 1 {
 			switch args[0] {
-			case "backend", "frontend", "web":
+			case "backend":
 				runType = args[0]
 				port = "8080"
+				break
+			case "frontend":
+				runType = args[0]
+				port = "5173"
+				break
+			case "web":
+				runType = args[0]
+				port = "3000"
+				break
 			default:
 				runType = "all"
 				port = args[0]
@@ -139,6 +148,6 @@ func runCmdMain(runType string, port string) {
 		log.Fatal(err)
 		os.Exit(1)
 	} else {
-		fmt.Println("代码正在运行，请访问地址 http://localhost:" + port)
+		fmt.Println("代码运行完毕")
 	}
 }

@@ -97,12 +97,20 @@ func cloneCode(repositoryUrl string, path string, name string, isMain bool) {
 	}
 
 	// 添加远程仓库
-	addUpstreamCommand := "git remote add upstream " + repositoryOldUrl
+	addUpstreamCommand := "git remote add upstream " + repositoryOldUrl + " && git fetch upstream"
 	addUpstreamCmd := exec.Command("bash", "-c", addUpstreamCommand)
 	addUpstreamCmd.Stdout = os.Stdout
 	addUpstreamCmd.Stderr = os.Stderr
 	addUpstreamCmd.Dir = path + "/" + name
 	addUpstreamCmd.Run()
+
+	// 把main分支绑定为isxcode仓库的分支
+	linkMainBranchCommand := "git branch --set-upstream-to=upstream/main main"
+	linkMainBranchCmd := exec.Command("bash", "-c", linkMainBranchCommand)
+	linkMainBranchCmd.Stdout = os.Stdout
+	linkMainBranchCmd.Stderr = os.Stderr
+	linkMainBranchCmd.Dir = path + "/" + name
+	linkMainBranchCmd.Run()
 }
 
 func cloneProjectCode() {
