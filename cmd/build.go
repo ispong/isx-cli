@@ -69,8 +69,8 @@ func buildCmdMain() {
 		"--rm " +
 		"-v " + projectPath + ":/spark-yun " +
 		"-v " + cachePnpmDir + ":/root/.pnpm-store " +
-		"-v " + cacheGradleDir + ":/root/.gradle" +
-		"-d " + buildImage
+		"-v " + cacheGradleDir + ":/root/.gradle " +
+		" " + buildImage
 	buildCmd := exec.Command("bash", "-c", buildCommand)
 	buildCmd.Stdout = os.Stdout
 	buildCmd.Stderr = os.Stderr

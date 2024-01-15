@@ -101,7 +101,7 @@ func runCmdMain(runType string, port string) {
 			"-v " + cacheGradleDir + ":/root/.gradle " +
 			"-e ENV_TYPE='BACKEND' " +
 			"-p " + port + ":8080 " +
-			"-d registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
+			" registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
 		break
 	case "frontend":
 		runCommand = "docker run " +
@@ -109,14 +109,14 @@ func runCmdMain(runType string, port string) {
 			"-v " + cachePnpmDir + ":/root/.pnpm-store " +
 			"-e ENV_TYPE='FRONTEND' " +
 			"-p " + port + ":5173 " +
-			"-d registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
+			" registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
 		break
 	case "all":
 		runCommand = "docker run " +
 			"-v " + projectPath + ":/spark-yun " +
 			"-e ENV_TYPE='ALL' " +
 			"-p " + port + ":8080 " +
-			"-d registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
+			" registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
 		break
 	case "web":
 		runCommand = "docker run " +
@@ -124,7 +124,7 @@ func runCmdMain(runType string, port string) {
 			"-p " + port + ":3000 " +
 			"-v " + projectPath + ":/spark-yun " +
 			"-v " + cachePnpmDir + ":/root/.pnpm-store " +
-			"-d registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
+			" registry.cn-shanghai.aliyuncs.com/isxcode/zhiqingyun-local:latest"
 		break
 	default:
 		fmt.Println("使用方式不对，请重新输入命令")
