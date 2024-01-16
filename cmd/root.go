@@ -113,7 +113,8 @@ user:
     token: ""
 project-list:
     - spark-yun
-    - flink-yun 
+    - flink-yun
+    - isx-cli
 spark-yun:
     name: spark-yun
     describe: 至轻云
@@ -134,8 +135,16 @@ flink-yun:
     sub-repository:
         - url: https://github.com/isxcode/flink-yun-vip.git
           name: flink-yun-vip
+isx-cli:
+    name: isx-cli
+    describe: isx专用工具
+    dir: ""
+    repository:
+        url: https://github.com/isxcode/isx-cli.git
+        download: no
+    sub-repository:
 version:
-    number: 0.0.3
+    number: 0.0.5
 `)
 			err := viper.ReadConfig(bytes.NewBuffer(yamlExample))
 			if err != nil {
