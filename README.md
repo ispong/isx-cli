@@ -13,6 +13,7 @@ echo >> /home/ispong/.bashrc
 echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"' >> /home/ispong/.bashrc
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 brew tap ispong/tap
+brew update
 brew install isx
 ```
 
